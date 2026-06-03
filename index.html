@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Solicitação de Pedido — Master</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="bg"></div>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="logo-badge">Portal de Pedidos</div>
+  <h1>Solicitação de <em>Pedido</em><br>Master</h1>
+  <p class="sub">Preencha todas as etapas para registrar sua solicitação</p>
+</header>
+
+<!-- ═══ AVISO ═══ -->
+<div class="notice">
+  <div class="notice-bar">
+    <span>⚠️ &nbsp;ATENÇÃO — LEIA ANTES DE PROSSEGUIR</span>
+  </div>
+  <div class="notice-body">
+    Antes de abrir a solicitação via Forms, a Master deve alinhar com a nossa
+    <strong>equipe técnica</strong> o <strong>modelo correto do AllBlock</strong>.
+    Pedidos enviados sem essa validação prévia <strong>não serão processados</strong>.
+  </div>
+</div>
+
+<!-- ═══ STEPS ═══ -->
+<div class="steps-wrap">
+  <div class="step active" id="step-ind-1">
+    <div class="step-circle" id="sc1">1</div>
+    <div class="step-label">Identificação</div>
+  </div>
+  <div class="step-line"><div class="step-line-fill" id="line1"></div></div>
+  <div class="step" id="step-ind-2">
+    <div class="step-circle" id="sc2">2</div>
+    <div class="step-label">Pedido</div>
+  </div>
+  <div class="step-line"><div class="step-line-fill" id="line2"></div></div>
+  <div class="step" id="step-ind-3">
+    <div class="step-circle" id="sc3">3</div>
+    <div class="step-label">Confirmação</div>
+  </div>
+</div>
+
+<!-- ═══ CARD ═══ -->
+<div class="card">
+
+<!-- ╔═ STEP 1 ═╗ -->
+<div id="pane1" class="step-pane">
+
+  <div class="sec-head">
+    <div class="sec-icon">🏢</div>
+    <div class="sec-title">Dados da Master</div>
+  </div>
+
+  <div class="field">
+    <label>Nome da Master <span class="req">*</span></label>
+    <div class="input-wrap">
+      <span class="input-ico">🏷️</span>
+      <input type="text" id="f_master" placeholder="Ex.: Distribuidora Alpha"/>
+    </div>
+  </div>
+
+  <div class="row-2">
+    <div class="field">
+      <label>Cidade <span class="req">*</span></label>
+      <div class="input-wrap">
+        <span class="input-ico">📍</span>
+        <input type="text" id="f_cidade" placeholder="Ex.: São Paulo"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Estado <span class="req">*</span></label>
+      <div class="input-wrap">
+        <span class="input-ico">🗺️</span>
+        <input type="text" id="f_estado" placeholder="Ex.: SP" maxlength="2" style="text-transform:uppercase"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Telefone / WhatsApp <span class="req">*</span></label>
+    <div class="input-wrap">
+      <span class="input-ico">📞</span>
+      <input type="tel" id="f_tel" placeholder="(00) 00000-0000" maxlength="15"/>
+    </div>
+  </div>
+
+  <hr class="div"/>
+
+  <div class="sec-head">
+    <div class="sec-icon">🚚</div>
+    <div class="sec-title">Entrega &amp; Fiscal</div>
+  </div>
+
+  <div class="field">
+    <label>CEP <span class="req">*</span> <span class="hint">— preenchimento automático</span></label>
+    <div class="input-wrap">
+      <span class="input-ico">📮</span>
+      <input type="text" id="f_cep" placeholder="00000-000" maxlength="9"/>
+      <div class="cep-loading" id="cep-spin"></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Endereço de Entrega <span class="req">*</span></label>
+    <textarea id="f_end" class="no-ico" placeholder="Rua, número, bairro, cidade — UF, CEP" rows="3"></textarea>
+  </div>
+
+  <div class="field">
+    <label>CNPJ <span class="req">*</span> <span class="hint">— para emissão de Nota Fiscal</span></label>
+    <div class="input-wrap">
+      <span class="input-ico">📄</span>
+      <input type="text" id="f_cnpj" placeholder="00.000.000/0000-00" maxlength="18"/>
+      <span class="input-ico-right" id="cnpj-status"></span>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-next" onclick="goStep2()">PRÓXIMO &nbsp;→</button>
+  </div>
+</div><!-- /pane1 -->
+
+<!-- ╔═ STEP 2 ═╗ -->
+<div id="pane2" class="step-pane" style="display:none">
+
+  <div class="sec-head">
+    <div class="sec-icon">📦</div>
+    <div class="sec-title">Quantidades de Produtos</div>
+  </div>
+
+  <div class="qty-grid">
+
+    <div class="qty-card">
+      <div class="qty-badge amber">📡</div>
+      <div class="qty-info">
+        <div class="qty-name">N4 — Rastreadores</div>
+        <div class="qty-desc">Dispositivo de rastreamento veicular N4</div>
+      </div>
+      <div class="qty-ctrl">
+        <button type="button" class="q-btn" onclick="qty('n4',-1)">−</button>
+        <input class="q-val" type="number" id="n4" value="0" min="0" readonly/>
+        <button type="button" class="q-btn" onclick="qty('n4',1)">+</button>
+      </div>
+    </div>
+
+    <div class="qty-card">
+      <div class="qty-badge blue">🔒</div>
+      <div class="qty-info">
+        <div class="qty-name">AllBlock Full</div>
+        <div class="qty-desc">Bloqueador completo — modelo validado com equipe técnica</div>
+      </div>
+      <div class="qty-ctrl">
+        <button type="button" class="q-btn" onclick="qty('abf',-1)">−</button>
+        <input class="q-val" type="number" id="abf" value="0" min="0" readonly/>
+        <button type="button" class="q-btn" onclick="qty('abf',1)">+</button>
+      </div>
+    </div>
+
+    <div class="qty-card">
+      <div class="qty-badge purple">⚡</div>
+      <div class="qty-info">
+        <div class="qty-name">AllBlock Eletrônico</div>
+        <div class="qty-desc">Versão eletrônica — modelo validado com equipe técnica</div>
+      </div>
+      <div class="qty-ctrl">
+        <button type="button" class="q-btn" onclick="qty('abe',-1)">−</button>
+        <input class="q-val" type="number" id="abe" value="0" min="0" readonly/>
+        <button type="button" class="q-btn" onclick="qty('abe',1)">+</button>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="div"/>
+
+  <div class="field">
+    <label>Observações <span class="hint">(opcional)</span></label>
+    <textarea id="f_obs" class="no-ico" placeholder="Informações adicionais sobre o pedido…" rows="3"></textarea>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="goStep1()">← Voltar</button>
+    <button class="btn-next" onclick="goStep3()">REVISAR &nbsp;→</button>
+  </div>
+</div><!-- /pane2 -->
+
+<!-- ╔═ STEP 3 — RESUMO ═╗ -->
+<div id="pane3" class="step-pane" style="display:none">
+
+  <div class="sec-head">
+    <div class="sec-icon">✅</div>
+    <div class="sec-title">Confirmar Solicitação</div>
+  </div>
+
+  <div id="resumo"></div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="goStep2()">← Voltar</button>
+    <button class="btn-submit" onclick="enviar()">✔ &nbsp;CONFIRMAR E ENVIAR</button>
+  </div>
+</div><!-- /pane3 -->
+
+<!-- ╔═ SUCCESS ═╗ -->
+<div class="success" id="successBox">
+  <div class="success-ring">✅</div>
+  <div class="success-title">Pedido Enviado!</div>
+  <p class="success-msg">Sua solicitação foi registrada com sucesso.<br/>Nossa equipe entrará em contato para confirmação.</p>
+  <div class="success-detail" id="success-detail"></div>
+  <button class="btn-new" onclick="resetForm()">+ Novo Pedido</button>
+</div>
+
+</div><!-- /card -->
+
+<footer>© Portal Master — Uso interno</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">⚠️ <span id="toast-msg"></span></div>
+
+<script src="script.js"></script>
+</body>
+</html>
