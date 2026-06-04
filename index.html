@@ -277,7 +277,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
     <div class="section-title">Cidade / Estado</div>
     <div class="card">
-      <div class="grid-3">
+      <div class="grid-2">
         <div class="field required">
           <label>Cidade</label>
           <input type="text" id="cidade" placeholder="Cidade"/>
@@ -293,17 +293,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
             <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
             <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
             <option selected>SP</option><option>SE</option><option>TO</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Canal de Venda</label>
-          <select id="canal">
-            <option value="">Selecione</option>
-            <option>Portal Master</option>
-            <option>WhatsApp</option>
-            <option>Aplicativo</option>
-            <option>Indicação</option>
-            <option>Visita Comercial</option>
           </select>
         </div>
       </div>
@@ -801,7 +790,7 @@ function coletarDados(){
   return {
     cnpj:v('cnpj'),razaoSocial:v('razaoSocial'),
     responsavel:v('responsavel'),telefone:v('telefone'),email:v('email'),
-    cidade:v('cidade'),estado:v('estado'),canal:v('canal'),
+    cidade:v('cidade'),estado:v('estado'),
     logradouro:v('logradouro'),numero:v('numero'),complemento:v('complemento'),
     bairro:v('bairro'),cep:v('cep'),cidadeEntrega:v('cidadeEntrega'),ufEntrega:v('ufEntrega'),
     frete:v('frete'),transportadora:v('transportadora'),prazo:v('prazo'),urgencia:v('urgencia'),
