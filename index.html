@@ -258,11 +258,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         </div>
       </div>
       <div class="grid-2" style="margin-bottom:16px">
-        <div class="field">
-          <label>Inscrição Estadual</label>
-          <input type="text" id="inscricaoEstadual" placeholder="000.000.000.000"/>
-        </div>
-        <div class="field required">
+        <div class="field required col-span-2">
           <label>Responsável pelo Pedido</label>
           <input type="text" id="responsavel" placeholder="Nome completo"/>
         </div>
@@ -803,7 +799,7 @@ function coletarDados(){
     }
   });
   return {
-    cnpj:v('cnpj'),razaoSocial:v('razaoSocial'),inscricaoEstadual:v('inscricaoEstadual'),
+    cnpj:v('cnpj'),razaoSocial:v('razaoSocial'),
     responsavel:v('responsavel'),telefone:v('telefone'),email:v('email'),
     cidade:v('cidade'),estado:v('estado'),canal:v('canal'),
     logradouro:v('logradouro'),numero:v('numero'),complemento:v('complemento'),
