@@ -207,9 +207,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   .topbar-badge { padding: 4px 8px; font-size: 8px; letter-spacing: 1px; }
   .container { padding: 20px 16px 60px; }
   
-  .steps { overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
-  .steps::-webkit-scrollbar { display: none; }
-  .step { min-width: 140px; padding: 12px 16px; }
+  .steps { overflow: hidden; display: block; border-left: none; border-right: none; }
+  .step { display: none; }
+  .step.active { display: flex; width: 100%; justify-content: center; padding: 18px; border-right: none; border-bottom: 2px solid var(--gold); }
   
   .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 12px; }
   .col-span-2 { grid-column: span 1; }
