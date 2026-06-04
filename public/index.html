@@ -201,6 +201,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 .toast.show{transform:translateY(0);opacity:1}
 .toast.error{border-left-color:var(--red)}
+@media(max-width: 768px) {
+  .topbar { padding: 0 16px; }
+  .topbar-name { font-size: 16px; }
+  .topbar-badge { padding: 4px 8px; font-size: 8px; letter-spacing: 1px; }
+  .container { padding: 20px 16px 60px; }
+  
+  .steps { overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+  .steps::-webkit-scrollbar { display: none; }
+  .step { min-width: 140px; padding: 12px 16px; }
+  
+  .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 12px; }
+  .col-span-2 { grid-column: span 1; }
+  
+  .pag-options { grid-template-columns: 1fr 1fr; }
+  
+  .produtos-header { grid-template-columns: 1.5fr 1fr 0.8fr 1fr 30px; }
+  .produto-row { grid-template-columns: 1.5fr 1fr 0.8fr 1fr 30px; }
+  .produtos-header div, .produto-row select, .produto-row input, .produto-row .row-total { padding: 10px 8px; font-size: 11px; }
+  .produto-row select { background-position: right 4px center; padding-right: 18px; }
+}
 </style>
 </head>
 <body>
