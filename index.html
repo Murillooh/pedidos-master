@@ -1046,7 +1046,7 @@
           </div>
           <div class="qty-ctrl">
             <button type="button" class="q-btn" onclick="qty('n4',-1)">−</button>
-            <input class="q-val" type="number" id="n4" value="0" min="0" readonly />
+            <input class="q-val" type="number" id="n4" value="0" min="0" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onblur="if(this.value==='')this.value='0'" />
             <button type="button" class="q-btn" onclick="qty('n4',1)">+</button>
           </div>
         </div>
@@ -1059,7 +1059,7 @@
           </div>
           <div class="qty-ctrl">
             <button type="button" class="q-btn" onclick="qty('abf',-1)">−</button>
-            <input class="q-val" type="number" id="abf" value="0" min="0" readonly />
+            <input class="q-val" type="number" id="abf" value="0" min="0" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onblur="if(this.value==='')this.value='0'" />
             <button type="button" class="q-btn" onclick="qty('abf',1)">+</button>
           </div>
         </div>
@@ -1072,7 +1072,7 @@
           </div>
           <div class="qty-ctrl">
             <button type="button" class="q-btn" onclick="qty('abe',-1)">−</button>
-            <input class="q-val" type="number" id="abe" value="0" min="0" readonly />
+            <input class="q-val" type="number" id="abe" value="0" min="0" oninput="this.value=this.value.replace(/[^0-9]/g,'')" onblur="if(this.value==='')this.value='0'" />
             <button type="button" class="q-btn" onclick="qty('abe',1)">+</button>
           </div>
         </div>
