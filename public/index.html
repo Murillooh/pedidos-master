@@ -415,24 +415,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       </div>
     </div>
 
-    <div class="section-title" style="margin-top:24px">Validade do Pedido</div>
-    <div class="card">
-      <div class="grid-2">
-        <div class="field">
-          <label>Válido por</label>
-          <select id="validade">
-            <option>3 dias úteis</option>
-            <option selected>5 dias úteis</option>
-            <option>10 dias úteis</option>
-            <option>30 dias</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Vendedor / Representante</label>
-          <input type="text" id="vendedor" placeholder="Nome do responsável pela venda"/>
-        </div>
-      </div>
-    </div>
 
     <div class="section-title">Aprovação</div>
     <div class="card">
@@ -614,7 +596,6 @@ function gerarResumo(){
     logradouro:v('logradouro'),numero:v('numero'),bairro:v('bairro'),
     cep:v('cep'),cidadeEntrega:v('cidadeEntrega'),ufEntrega:v('ufEntrega'),
     urgencia:v('urgencia'),
-    validade:v('validade'),vendedor:v('vendedor'),
     observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
   };
 
@@ -658,14 +639,13 @@ function gerarResumo(){
       <div style="padding:12px 20px;border-bottom:1px solid var(--border);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);background:var(--s2)">Dispositivos</div>
       ${produtosHtml||'<div class="totais-row"><span class="totais-label">Nenhum dispositivo adicionado</span></div>'}
     </div>
+    ${(dados.observacoes || dados.pedidoRef) ? `
     <div class="card">
-      <div class="section-title">Condições</div>
-      <div style="display:flex;gap:24px;flex-wrap:wrap">
-        <div><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px">Validade:</span> ${dados.validade}</div>
-        <div><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px">Vendedor:</span> ${dados.vendedor||'—'}</div>
-      </div>
-      ${dados.observacoes?`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted2)"><strong style="color:var(--text)">Obs:</strong> ${dados.observacoes}</div>`:''}
+      <div class="section-title">Observações</div>
+      ${dados.pedidoRef ? `<div style="margin-bottom:8px;font-size:12px;color:var(--muted2)"><strong style="color:var(--text)">Pedido Ref:</strong> ${dados.pedidoRef}</div>` : ''}
+      ${dados.observacoes ? `<div style="font-size:12px;color:var(--muted2)"><strong style="color:var(--text)">Obs:</strong> ${dados.observacoes}</div>` : ''}
     </div>
+    ` : ''}
   `;
 }
 
@@ -730,7 +710,8 @@ function coletarDados(){
     logradouro:v('logradouro'),numero:v('numero'),complemento:v('complemento'),
     bairro:v('bairro'),cep:v('cep'),cidadeEntrega:v('cidadeEntrega'),ufEntrega:v('ufEntrega'),
     urgencia:v('urgencia'),
-    validade:v('validade'),vendedor:v('vendedor'),
+    validade: '',
+    vendedor: '',
     emailAprovador:v('emailAprovador'),observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
     produtos:produtos,
     totalQtd:document.getElementById('total-qtd').textContent,
