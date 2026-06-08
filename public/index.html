@@ -394,10 +394,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
           <span class="totais-label">Total de Dispositivos</span>
           <span class="totais-val" id="total-qtd">0 un.</span>
         </div>
-        <div class="totais-row">
-          <span class="totais-label">Peso Estimado</span>
-          <span class="totais-val" id="total-peso">0,0 kg</span>
-        </div>
       </div>
     </div>
 
@@ -572,20 +568,17 @@ function removerProduto(id){
 }
 
 function calcularTotais(){
-  let qtdTotal=0,pesoTotal=0;
+  let qtdTotal=0;
   document.querySelectorAll('.produto-row').forEach(row=>{
     const id=row.id;
     const sel=row.querySelector('select');
     const idx=sel?.value;
     const qtd=parseInt(document.getElementById(id+'-qtd')?.value)||0;
     if(idx!==''&&idx!==undefined&&MODELOS[idx]){
-      const m=MODELOS[idx];
       qtdTotal+=qtd;
-      pesoTotal+=m.peso*qtd;
     }
   });
   document.getElementById('total-qtd').textContent=qtdTotal+' un.';
-  document.getElementById('total-peso').textContent=pesoTotal.toFixed(1).replace('.',',')+' kg';
 }
 
 // ── RESUMO ──
