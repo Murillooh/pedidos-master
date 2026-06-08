@@ -239,6 +239,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 <div class="container">
 
   <!-- STEPS -->
+<<<<<<< HEAD
   <div class="steps">
     <div class="step active" id="step-1" onclick="irPasso(1)">
       <div class="step-num">1</div>
@@ -265,6 +266,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <!-- ── PASSO 1: CLIENTE ── -->
   <div class="passo ativo" id="passo-1">
     <div class="section-title">Dados do Cliente</div>
+=======
+<div class="steps">
+  <div class="step active" id="step-1" onclick="irPasso(1)"><div class="step-num">1</div><div class="step-label">Cliente</div></div>
+  <div class="step" id="step-2" onclick="irPasso(2)"><div class="step-num">2</div><div class="step-label">Entrega</div></div>
+  <div class="step" id="step-3" onclick="irPasso(3)"><div class="step-num">3</div><div class="step-label">Dispositivos</div></div>
+  <div class="step" id="step-4" onclick="irPasso(4)"><div class="step-num">4</div><div class="step-label">Revisão</div></div>
+</div>
+  
+>>>>>>> 605f449 (Remove payment step and clean up)
     <div class="card">
       <div class="grid-2" style="margin-bottom:16px">
         <div class="field required">
@@ -442,6 +452,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
   </div>
 
+<<<<<<< HEAD
   <!-- ── PASSO 4: PAGAMENTO ── -->
   <div class="passo" id="passo-4">
     <div class="section-title">Condição de Pagamento</div>
@@ -494,6 +505,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div id="resumo-container"></div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="irPasso(4)">← Voltar</button>
+=======
+  <!-- ── PASSO 4: REVISÃO ── -->
+  <div class="passo" id="passo-4">
+    <div class="section-title">Resumo Final</div>
+    <div id="resumo-container"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="irPasso(3)">← Voltar</button>
+>>>>>>> 605f449 (Remove payment step and clean up)
       <button class="btn btn-primary" id="btn-enviar" onclick="enviarPedido()">✓ Gerar Pedido</button>
     </div>
   </div>
@@ -528,7 +547,11 @@ function irPasso(n){
     else if(i+1<n) s.classList.add('done');
   });
   passoAtual=n;
+<<<<<<< HEAD
   if(n===5) gerarResumo();
+=======
+  if(n===4) gerarResumo();
+>>>>>>> 605f449 (Remove payment step and clean up)
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -585,17 +608,13 @@ function buscarCNPJ(){
   },800);
 }
 
-// ── URGÊNCIA / PAGAMENTO ──
+// ── URGÊNCIA ──
 function setUrgencia(btn,val){
   document.querySelectorAll('.urg-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('urgencia').value=val;
 }
-function setPagamento(btn,val){
-  document.querySelectorAll('.pag-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('pagamento').value=val;
-}
+
 
 // ── PRODUTOS ──
 function adicionarProduto(){
@@ -666,7 +685,7 @@ function gerarResumo(){
     logradouro:v('logradouro'),numero:v('numero'),bairro:v('bairro'),
     cep:v('cep'),cidadeEntrega:v('cidadeEntrega'),ufEntrega:v('ufEntrega'),
     urgencia:v('urgencia'),
-    pagamento:v('pagamento'),validade:v('validade'),vendedor:v('vendedor'),
+    validade:v('validade'),vendedor:v('vendedor'),
     observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
   };
 
@@ -717,9 +736,13 @@ function gerarResumo(){
     <div class="card">
       <div class="section-title">Condições</div>
       <div style="display:flex;gap:24px;flex-wrap:wrap">
+<<<<<<< HEAD
         <div><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px">Pagamento:</span> ${dados.pagamento}</div>
         <div><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px">Validade:</span> ${dados.validade}</div>
         <div><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px">Vendedor:</span> ${dados.vendedor||'—'}</div>
+=======
+
+>>>>>>> 605f449 (Remove payment step and clean up)
       </div>
       ${dados.observacoes?`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted2)"><strong style="color:var(--text)">Obs:</strong> ${dados.observacoes}</div>`:''}
     </div>
@@ -787,8 +810,13 @@ function coletarDados(){
     logradouro:v('logradouro'),numero:v('numero'),complemento:v('complemento'),
     bairro:v('bairro'),cep:v('cep'),cidadeEntrega:v('cidadeEntrega'),ufEntrega:v('ufEntrega'),
     urgencia:v('urgencia'),
+<<<<<<< HEAD
     pagamento:v('pagamento'),validade:v('validade'),vendedor:v('vendedor'),
     emailAprovador:v('emailAprovador'),observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
+=======
+
+observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
+>>>>>>> 605f449 (Remove payment step and clean up)
     produtos:produtos,
     totalQtd:document.getElementById('total-qtd').textContent,
     totalValor:document.getElementById('total-valor').textContent,
