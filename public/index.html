@@ -96,7 +96,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* ── PRODUTOS TABLE ── */
 .produtos-header{
-  display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 40px;
+  display:grid;grid-template-columns:2.5fr 1.5fr 1fr 40px;
   gap:0;border:1px solid var(--border);border-bottom:none;
 }
 .produtos-header div{
@@ -107,7 +107,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .produtos-header div:last-child{border-right:none}
 
 .produto-row{
-  display:grid;grid-template-columns:2fr 1.2fr 1fr 1fr 40px;
+  display:grid;grid-template-columns:2.5fr 1.5fr 1fr 40px;
   gap:0;border:1px solid var(--border);border-bottom:none;
 }
 .produto-row:last-of-type{border-bottom:1px solid var(--border)}
@@ -216,9 +216,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   
   .pag-options { grid-template-columns: 1fr 1fr; }
   
-  .produtos-header { grid-template-columns: 1.5fr 1fr 0.8fr 1fr 30px; }
-  .produto-row { grid-template-columns: 1.5fr 1fr 0.8fr 1fr 30px; }
-  .produtos-header div, .produto-row select, .produto-row input, .produto-row .row-total { padding: 10px 8px; font-size: 11px; }
+  .produtos-header { grid-template-columns: 1.5fr 1fr 0.8fr 30px; }
+  .produto-row { grid-template-columns: 1.5fr 1fr 0.8fr 30px; }
+  .produtos-header div, .produto-row select, .produto-row input { padding: 10px 8px; font-size: 11px; }
   .produto-row select { background-position: right 4px center; padding-right: 18px; }
 }
 </style>
@@ -383,7 +383,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
       <div>Modelo / Dispositivo</div>
       <div>Versão / Config.</div>
       <div>Qtd.</div>
-      <div>Valor Unit.</div>
       <div></div>
     </div>
     <div id="produtos-body"></div>
@@ -398,10 +397,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
         <div class="totais-row">
           <span class="totais-label">Peso Estimado</span>
           <span class="totais-val" id="total-peso">0,0 kg</span>
-        </div>
-        <div class="totais-row grand">
-          <span class="totais-label">Valor Total do Pedido</span>
-          <span class="totais-val" id="total-valor">R$ 0,00</span>
         </div>
       </div>
     </div>
@@ -572,7 +567,6 @@ function adicionarProduto(){
     </select>
     <select id="${id}-versao"><option value="">—</option></select>
     <input type="number" id="${id}-qtd" value="1" min="1" max="9999" oninput="calcularTotais()"/>
-    <div class="row-total" id="${id}-total">—</div>
     <div class="row-remove" onclick="removerProduto('${id}')">×</div>
   `;
   document.getElementById('produtos-body').appendChild(div);
@@ -596,27 +590,20 @@ function removerProduto(id){
 }
 
 function calcularTotais(){
-  let qtdTotal=0,pesoTotal=0,valorTotal=0;
+  let qtdTotal=0,pesoTotal=0;
   document.querySelectorAll('.produto-row').forEach(row=>{
     const id=row.id;
     const sel=row.querySelector('select');
     const idx=sel?.value;
     const qtd=parseInt(document.getElementById(id+'-qtd')?.value)||0;
-    const totalEl=document.getElementById(id+'-total');
     if(idx!==''&&idx!==undefined&&MODELOS[idx]){
       const m=MODELOS[idx];
-      const val=m.preco*qtd;
       qtdTotal+=qtd;
       pesoTotal+=m.peso*qtd;
-      valorTotal+=val;
-      if(totalEl) totalEl.textContent='R$ '+val.toLocaleString('pt-BR',{minimumFractionDigits:2});
-    } else {
-      if(totalEl) totalEl.textContent='—';
     }
   });
   document.getElementById('total-qtd').textContent=qtdTotal+' un.';
   document.getElementById('total-peso').textContent=pesoTotal.toFixed(1).replace('.',',')+' kg';
-  document.getElementById('total-valor').textContent='R$ '+valorTotal.toLocaleString('pt-BR',{minimumFractionDigits:2});
 }
 
 // ── RESUMO ──
@@ -642,7 +629,7 @@ function gerarResumo(){
       const m=MODELOS[idx];
       produtosHtml+=`<div class="totais-row">
         <span class="totais-label">${m.nome}${versao?' · '+versao:''}</span>
-        <span class="totais-val">${qtd} un. · R$ ${(m.preco*qtd).toLocaleString('pt-BR',{minimumFractionDigits:2})}</span>
+        <span class="totais-val">${qtd} un.</span>
       </div>`;
     }
   });
@@ -670,10 +657,6 @@ function gerarResumo(){
     <div class="totais-box" style="margin-bottom:24px">
       <div style="padding:12px 20px;border-bottom:1px solid var(--border);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);background:var(--s2)">Dispositivos</div>
       ${produtosHtml||'<div class="totais-row"><span class="totais-label">Nenhum dispositivo adicionado</span></div>'}
-      <div class="totais-row grand">
-        <span class="totais-label">Total</span>
-        <span class="totais-val">${document.getElementById('total-valor').textContent}</span>
-      </div>
     </div>
     <div class="card">
       <div class="section-title">Condições</div>
@@ -751,7 +734,7 @@ function coletarDados(){
     emailAprovador:v('emailAprovador'),observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
     produtos:produtos,
     totalQtd:document.getElementById('total-qtd').textContent,
-    totalValor:document.getElementById('total-valor').textContent,
+    totalValor: '',
   };
 }
 
