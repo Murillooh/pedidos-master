@@ -84,6 +84,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 }
 .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235A5650' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold-dim);background:var(--s3)}
+
+/* ── AUTOFILL FIX ── */
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover, 
+.field input:-webkit-autofill:focus, 
+.field input:-webkit-autofill:active,
+.field textarea:-webkit-autofill,
+.field textarea:-webkit-autofill:hover,
+.field textarea:-webkit-autofill:focus,
+.field textarea:-webkit-autofill:active,
+.field select:-webkit-autofill,
+.field select:-webkit-autofill:hover,
+.field select:-webkit-autofill:focus,
+.field select:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--s2) inset !important;
+  -webkit-text-fill-color: var(--text) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
 .field textarea{resize:vertical;min-height:80px;line-height:1.6}
 .field input::placeholder{color:var(--muted)}
 .field.required label::after{content:' *';color:var(--gold)}
