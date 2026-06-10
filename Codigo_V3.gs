@@ -1,5 +1,13 @@
 var PASTA_DRIVE_ID = '1saQazfevhpRNebPnfNZbCXT_JK5SN1US'; 
 
+// =====================================================================
+// FUNÇÃO PARA AUTORIZAR O GOOGLE A ENVIAR E-MAILS (EXECUTE-A UMA VEZ!)
+// =====================================================================
+function autorizarEmails() {
+  var email = Session.getEffectiveUser().getEmail();
+  Logger.log("Permissão concedida! O sistema agora pode enviar e-mails usando a conta: " + email);
+}
+
 function doPost(e) {
   var headers = {
     'Access-Control-Allow-Origin': '*',
@@ -25,41 +33,44 @@ function processarPedidoV2(d) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("Pedidos V2");
   
+  var cabecalhos = [
+    "Protocolo", "Data/Hora", "CNPJ", "Razão Social", "Responsável", 
+    "Telefone", "E-mail", "Cidade", "Estado", "CEP", "Endereço", 
+    "Número", "Bairro", "Complemento", "Urgência", "Pagamento", 
+    "Validade Proposta", "Vendedor", "E-mail Aprovador", "Qtd Total", 
+    "Valor Total", "Produtos", "Observações"
+  ];
+
   if (!sheet) {
     sheet = ss.insertSheet("Pedidos V2");
     
-    // Configurar Cabeçalhos Bonitos
-    var cabecalhos = [
-      "Protocolo", "Data/Hora", "CNPJ", "Razão Social", "Responsável", 
-      "Telefone", "E-mail", "Cidade", "Estado", "CEP", "Endereço", 
-      "Número", "Bairro", "Complemento", "Urgência", "Pagamento", 
-      "Validade Proposta", "Vendedor", "E-mail Aprovador", "Qtd Total", 
-      "Valor Total", "Produtos", "Observações"
-    ];
+    var maxRows = sheet.getMaxRows();
+    var maxCols = sheet.getMaxColumns();
+    var allRange = sheet.getRange(1, 1, maxRows, maxCols);
+    allRange.setBackground("#0B1B3D"); 
+    allRange.setFontColor("#C9A84C"); 
+    allRange.setVerticalAlignment("middle");
+    allRange.setBorder(true, true, true, true, true, true, "#1E3050", SpreadsheetApp.BorderStyle.SOLID);
     
-    sheet.getRange(1, 1, 1, cabecalhos.length).setValues([cabecalhos]);
-    
-    // Estilizar Cabeçalho
-    var headerRange = sheet.getRange(1, 1, 1, cabecalhos.length);
-    headerRange.setBackground("#080808");
-    headerRange.setFontColor("#C9A84C");
-    headerRange.setFontWeight("bold");
-    headerRange.setHorizontalAlignment("center");
-    
-    // Congelar a primeira linha para facilitar a rolagem
     sheet.setFrozenRows(1);
-    
-    // Ajustar larguras das colunas
-    sheet.setColumnWidth(1, 120); // Protocolo
-    sheet.setColumnWidth(2, 120); // Data
-    sheet.setColumnWidth(4, 200); // Razão Social
-    sheet.setColumnWidth(22, 350); // Produtos (lista)
+    sheet.setColumnWidth(1, 120);
+    sheet.setColumnWidth(2, 120);
+    sheet.setColumnWidth(4, 200);
+    sheet.setColumnWidth(22, 350); 
   }
+  
+  var headerRange = sheet.getRange(1, 1, 1, cabecalhos.length);
+  headerRange.setValues([cabecalhos]); 
+  headerRange.setBackground("#000000"); 
+  headerRange.setFontColor("#C9A84C"); 
+  headerRange.setFontWeight("bold");
+  headerRange.setHorizontalAlignment("center");
+  headerRange.setBorder(true, true, true, true, true, true, "#C9A84C", SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
+  sheet.setRowHeight(1, 40); 
   
   var agora = new Date();
   var ano = agora.getFullYear();
   
-  // Pegar último número do protocolo
   var lastRow = sheet.getLastRow();
   var num = 1;
   if (lastRow > 1) {
@@ -76,25 +87,24 @@ function processarPedidoV2(d) {
   while (numStr.length < 5) numStr = "0" + numStr;
   var protocolo = "PED-" + ano + "-" + numStr;
   
-  // Formatar Produtos para a Planilha e PDF
   var produtosHtml = "";
   var produtosStr = "";
   if (d.produtos && d.produtos.length > 0) {
     d.produtos.forEach(function(p) {
-      produtosStr += p.qtd + "x " + p.modelo + (p.versao ? " ("+p.versao+")" : "") + " - R$ " + p.precoUnit + "\n";
+      produtosStr += p.qtd + "x " + p.modelo + (p.versao ? " ("+p.versao+")" : "") + " | ";
       
       produtosHtml += "<tr>";
-      produtosHtml += "<td style='padding:8px 0;border-bottom:1px solid #EAEAEA'>" + p.modelo + (p.versao ? " <small style='color:#777'>("+p.versao+")</small>" : "") + "</td>";
-      produtosHtml += "<td style='padding:8px 0;border-bottom:1px solid #EAEAEA;text-align:center'>R$ " + p.precoUnit + "</td>";
-      produtosHtml += "<td style='padding:8px 0;border-bottom:1px solid #EAEAEA;text-align:center'>" + p.qtd + "</td>";
-      produtosHtml += "<td style='padding:8px 0;border-bottom:1px solid #EAEAEA;text-align:right'>R$ " + p.total + "</td>";
+      produtosHtml += "<td>" + p.modelo + "</td>";
+      produtosHtml += "<td style='text-align:center'>" + (p.versao ? p.versao : "—") + "</td>";
+      produtosHtml += "<td style='text-align:right'>" + p.qtd + "</td>";
       produtosHtml += "</tr>";
     });
+    produtosStr = produtosStr.replace(/ \| $/, "");
   } else {
-    produtosHtml = "<tr><td colspan='4' style='text-align:center;padding:16px;color:#999'>Nenhum dispositivo adicionado.</td></tr>";
+    produtosHtml = "<tr><td colspan='3' style='text-align:center'>Nenhum dispositivo adicionado.</td></tr>";
   }
 
-  // GRAVAR NA PLANILHA (SEM CAMPOS ANTIGOS)
+  // GRAVAR NA PLANILHA
   sheet.appendRow([
     protocolo,
     Utilities.formatDate(agora, Session.getScriptTimeZone(), 'dd/MM/yyyy HH:mm'),
@@ -117,166 +127,301 @@ function processarPedidoV2(d) {
     d.emailAprovador || '',
     d.totalQtd || '',
     d.totalValor || '',
-    produtosStr.trim(),
+    produtosStr,
     d.observacoes || ''
   ]);
   
-  // Fazer a célula dos produtos quebrar linha bonitinho
   var insertedRow = sheet.getLastRow();
-  sheet.getRange(insertedRow, 22).setWrap(true); 
+  sheet.getRange(insertedRow, 22).setWrap(false); 
+  
+  var insertedRowRange = sheet.getRange(insertedRow, 1, 1, 23);
+  insertedRowRange.setBackground("#0B1B3D"); 
+  insertedRowRange.setFontColor("#C9A84C"); 
+  insertedRowRange.setVerticalAlignment("middle");
+  insertedRowRange.setBorder(true, true, true, true, true, true, "#1E3050", SpreadsheetApp.BorderStyle.SOLID);
 
-  // GERAR PDF COM O TEMPLATE
-  var pdfUrl = gerarEsalvarPDF_V2(protocolo, d, produtosHtml, agora);
+  // GERAR PDF COM O TEMPLATE NOVO (agora retorna o arquivo em si)
+  var arquivoPDF = gerarEsalvarPDF_V4(protocolo, d, produtosHtml, agora);
+  
+  // =========================================================
+  // ENVIAR E-MAILS WITH THE PDF ATTACHED
+  // =========================================================
+  try {
+    var adminEmail = Session.getEffectiveUser().getEmail(); // Seu e-mail do Google
+    var clienteEmail = d.email; // O e-mail que o cliente preencheu no formulário
+    
+    // 1. Enviando para o Cliente
+    if (clienteEmail && clienteEmail.indexOf('@') !== -1) {
+      var assuntoCliente = "Confirmação de Pedido - " + protocolo + " - Forms";
+      var corpoCliente = "<h2>Olá, " + (d.responsavel || 'Cliente') + "!</h2>" +
+                         "<p>Recebemos a sua solicitação de pedido com sucesso.</p>" +
+                         "<p>Em anexo, você encontra a cópia oficial do seu pedido (<strong>" + protocolo + "</strong>) gerado pelo nosso sistema.</p>" +
+                         "<br/><p>A equipe entrará em contato em breve.</p>" +
+                         "<p><em>Portal Master - Forms</em></p>";
+      
+      MailApp.sendEmail({
+        to: clienteEmail,
+        subject: assuntoCliente,
+        htmlBody: corpoCliente,
+        attachments: [arquivoPDF.getBlob()]
+      });
+    }
+    
+    // 2. Enviando para o Administrador (Você)
+    var assuntoAdmin = "NOVO PEDIDO: " + protocolo + " - " + (d.razaoSocial || 'Cliente Novo');
+    var corpoAdmin = "<h2>Novo Pedido Recebido pelo Portal!</h2>" +
+                     "<p>O cliente <strong>" + (d.razaoSocial || 'Não informado') + "</strong> gerou um novo pedido através do formulário.</p>" +
+                     "<p>O documento em PDF contendo todos os detalhes está em anexo a este e-mail.</p>" +
+                     "<br/><p>Para ver na planilha, acesse seu Google Sheets.</p>";
+                     
+    MailApp.sendEmail({
+      to: adminEmail,
+      subject: assuntoAdmin,
+      htmlBody: corpoAdmin,
+      attachments: [arquivoPDF.getBlob()]
+    });
+    
+  } catch(e) {
+    // Caso ocorra um erro no envio de e-mail, registramos no log, mas não quebramos o app
+    console.log("Erro ao enviar e-mail: " + e.toString());
+  }
   
   return protocolo;
 }
 
-function gerarEsalvarPDF_V2(protocolo, dados, produtosHtml, agora) {
+function gerarEsalvarPDF_V4(protocolo, dados, produtosHtml, agora) {
   var dataStr = Utilities.formatDate(agora, Session.getScriptTimeZone(), 'dd/MM/yyyy HH:mm');
   
-  // Mapa de urgência para cores no PDF
-  var urgColor = '#5A5650';
+  var urgClass = 'normal';
   var urgText = 'NORMAL';
-  if (dados.urgencia === 'urgente') { urgColor = '#E05245'; urgText = 'URGENTE'; }
-  if (dados.urgencia === 'prioritario') { urgColor = '#C9A84C'; urgText = 'PRIORIDADE'; }
+  if (dados.urgencia === 'urgente') { urgClass = 'urgente'; urgText = 'URGENTE'; }
+  if (dados.urgencia === 'prioritario') { urgClass = 'prioritario'; urgText = 'PRIORIDADE'; }
   
   var html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8"/>
+<title>Pedido Oficial — Forms</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-  body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a1a1a; margin: 0; padding: 40px; }
-  .header { display: flex; justify-content: space-between; border-bottom: 2px solid #C9A84C; padding-bottom: 20px; margin-bottom: 30px; }
-  .header-left h1 { font-family: 'Times New Roman', serif; color: #7A6030; font-size: 32px; margin: 0; }
-  .header-left p { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #8A8580; margin: 5px 0 0 0; }
-  .header-right { text-align: right; }
-  .header-right h2 { font-size: 16px; margin: 0 0 5px 0; color: #333; }
-  .header-right p { font-size: 12px; color: #777; margin: 0; }
-  
-  .section { margin-bottom: 25px; }
-  .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #7A6030; border-bottom: 1px solid #EAEAEA; padding-bottom: 5px; margin-bottom: 15px; font-weight: bold; }
-  
-  .grid { width: 100%; border-collapse: collapse; }
-  .grid td { padding: 8px; vertical-align: top; }
-  .label { font-size: 9px; text-transform: uppercase; color: #8A8580; letter-spacing: 1px; display: block; margin-bottom: 2px; }
-  .value { font-size: 13px; font-weight: 500; color: #222; }
-  
-  .box { border: 1px solid #D0CCC5; padding: 15px; border-radius: 4px; background: #FAFAFA; }
-  
-  .table-produtos { width: 100%; border-collapse: collapse; margin-top: 10px; }
-  .table-produtos th { text-align: left; font-size: 10px; text-transform: uppercase; color: #7A6030; border-bottom: 2px solid #C9A84C; padding: 8px 0; }
-  .table-produtos td { font-size: 12px; }
-  .total-row td { font-size: 16px; font-weight: bold; color: #7A6030; border-top: 2px solid #C9A84C; padding-top: 15px; margin-top: 15px; }
-  
-  .footer { margin-top: 60px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #EAEAEA; padding-top: 20px; }
-  
-  .signature-block { width: 100%; margin-top: 50px; border-collapse: collapse; }
-  .signature-block td { width: 50%; text-align: center; vertical-align: bottom; }
-  .sign-line { border-top: 1px solid #333; width: 80%; margin: 0 auto; padding-top: 5px; font-size: 10px; text-transform: uppercase; color: #555; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#C9A84C;--gold-light:#F0D080;--gold-dim:#7A6030;
+  --bg:#080808;--s1:#111111;--s2:#181818;--s3:#1F1F1F;
+  --border:#252525;--border-gold:#3A3020;
+  --text:#E8E4DC;--muted:#5A5650;--muted2:#8A8580;
+  --red:#E05245;--red-bg:#1A0C0B;
+}
+@media print{body{background:#fff!important}.page{box-shadow:none!important;border:none!important}
+  :root{--bg:#fff;--s1:#fff;--s2:#f7f7f5;--s3:#f0efe9;--border:#ddd;--border-gold:#d4c5a0;
+    --text:#1C1C1C;--muted:#999;--muted2:#666;--gold:#B8963E;--gold-light:#C9A84C;--gold-dim:#B8963E}}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);min-height:100vh;display:flex;
+  align-items:flex-start;justify-content:center;padding:48px 20px;color:var(--text)}
+.page{background:var(--s1);width:740px;max-width:100%;padding:60px 68px;position:relative;
+  overflow:hidden;border:1px solid var(--border);
+  box-shadow:0 0 0 1px #000,0 32px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(201,168,76,.08)}
+.page::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;
+  background:linear-gradient(180deg,var(--gold-dim) 0%,var(--gold) 40%,var(--gold-light) 55%,var(--gold) 70%,var(--gold-dim) 100%)}
+.page::after{content:'';position:absolute;top:0;left:4px;right:0;height:1px;
+  background:linear-gradient(90deg,var(--gold) 0%,transparent 60%)}
+
+/* HEADER */
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px}
+.brand-tag{font-size:9px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:8px}
+.brand-name{font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:var(--gold-light);
+  line-height:1;letter-spacing:-1.5px;text-shadow:0 0 40px rgba(201,168,76,.15)}
+.protocol-block{text-align:right}
+.protocol-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.protocol-number{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--gold);letter-spacing:1px}
+.protocol-date{font-size:11.5px;color:var(--muted);margin-top:5px}
+.urgencia-badge{display:inline-block;margin-top:8px;padding:3px 10px;font-size:9px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;border:1px solid}
+.urgencia-badge.normal{color:var(--muted);border-color:var(--border)}
+.urgencia-badge.prioritario{color:#E8A930;border-color:#E8A930}
+.urgencia-badge.urgente{color:var(--red);border-color:var(--red)}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,var(--gold) 0%,var(--border-gold) 50%,transparent 100%);margin-bottom:36px}
+
+/* SECTION TITLE */
+.section-title{font-size:8.5px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* CLIENT GRID */
+.client-grid{border:1px solid var(--border);margin-bottom:32px;overflow:hidden}
+.client-row{display:flex;border-bottom:1px solid var(--border)}
+.client-row:last-child{border-bottom:none}
+.client-label{width:200px;flex-shrink:0;padding:12px 18px;font-size:9.5px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);
+  border-right:1px solid var(--border);background:var(--s2)}
+.client-value{padding:12px 18px;font-size:13px;color:var(--text)}
+
+/* ADDRESS */
+.address-box{border:1px solid var(--border);border-left:3px solid var(--gold);
+  padding:15px 20px;background:var(--s2);margin-bottom:32px;font-size:13px;
+  line-height:1.8;color:var(--text)}
+
+/* TABLE */
+.table-wrap{margin-bottom:0}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--gold);padding:13px 16px;border-bottom:1px solid var(--gold-dim);
+  background:var(--s2);text-align:left}
+thead th:last-child{text-align:right}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody td{padding:14px 16px;font-size:13.5px;color:var(--text)}
+tbody td:nth-child(2){text-align:center;color:var(--muted2);font-size:12px}
+tbody td:last-child{text-align:right;font-weight:600}
+.total-section{background:var(--s3)!important;border-top:1px solid var(--gold-dim)!important}
+.total-section td{padding:16px!important}
+.total-section td:first-child{font-size:9px!important;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--muted)!important;font-weight:700!important}
+.total-section td:last-child{font-family:'Playfair Display',serif;font-size:26px!important;
+  color:var(--gold-light)!important;font-weight:700!important;
+  text-shadow:0 0 20px rgba(201,168,76,.2)}
+
+/* INFO BOXES */
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);
+  border:1px solid var(--border);margin-bottom:32px}
+.info-cell{background:var(--s1);padding:14px 18px}
+.info-cell-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:5px}
+.info-cell-value{font-size:13px;color:var(--text)}
+
+/* NOTES */
+.notes-box{border:1px solid var(--border);padding:14px 18px;margin-bottom:20px;background:var(--s2)}
+.notes-label{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:7px}
+.notes-text{font-size:13px;color:var(--text);line-height:1.6}
+
+/* ALERT */
+.alert{border:1px solid #3A1A18;border-left:4px solid var(--red);background:var(--red-bg);
+  padding:14px 18px;font-size:12px;line-height:1.7;color:#D4907A;
+  margin-bottom:52px;display:flex;gap:12px;align-items:flex-start}
+.alert-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert strong{color:var(--red);font-weight:600}
+
+/* SIGNATURES */
+.signatures{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-bottom:44px}
+.sig-block{display:flex;flex-direction:column;align-items:center}
+.sig-line{width:100%;height:1px;background:var(--border);margin-bottom:11px}
+.sig-label{font-size:10px;font-weight:400;letter-spacing:.5px;color:var(--muted);text-align:center}
+
+/* FOOTER */
+.footer{text-align:center;font-size:9.5px;color:var(--muted);letter-spacing:2px;
+  text-transform:uppercase;border-top:1px solid var(--border);padding-top:18px}
+
+/* spacer */
+.mb{margin-bottom:32px}
 </style>
 </head>
 <body>
+<div class="page">
 
   <div class="header">
-    <table style="width:100%"><tr>
-      <td class="header-left" style="width:50%">
-        <p>Portal Master — Pedido Oficial</p>
-        <h1>${dados.razaoSocial || 'Cliente'}</h1>
-      </td>
-      <td class="header-right" style="text-align:right">
-        <p style="font-size:10px;text-transform:uppercase;color:#8A8580;letter-spacing:1px;margin-bottom:4px">Protocolo</p>
-        <h2>${protocolo}</h2>
-        <p>${dataStr}</p>
-      </td>
-    </tr></table>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Dados do Cliente</div>
-    <div class="box">
-      <table class="grid">
-        <tr>
-          <td style="width:60%"><span class="label">Razão Social</span><span class="value">${dados.razaoSocial || '—'}</span></td>
-          <td style="width:40%"><span class="label">CNPJ</span><span class="value">${dados.cnpj || '—'}</span></td>
-        </tr>
-        <tr>
-          <td><span class="label">Responsável</span><span class="value">${dados.responsavel || '—'}</span></td>
-          <td><span class="label">Contato</span><span class="value">${dados.telefone || '—'} <br> <span style="font-size:11px;color:#555">${dados.email || ''}</span></span></td>
-        </tr>
-      </table>
+    <div class="brand-block">
+      <div class="brand-tag">Portal Master — Pedido Oficial</div>
+      <div class="brand-name">Forms</div>
+    </div>
+    <div class="protocol-block">
+      <div class="protocol-label">Protocolo</div>
+      <div class="protocol-number">${protocolo}</div>
+      <div class="protocol-date">${dataStr}</div>
+      <div class="urgencia-badge ${urgClass}">${urgText}</div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">Logística e Entrega</div>
-    <div class="box">
-      <table class="grid">
-        <tr>
-          <td colspan="2"><span class="label">Endereço de Entrega</span>
-            <span class="value">${dados.logradouro || '—'}, ${dados.numero || 'S/N'} ${dados.complemento ? ' - '+dados.complemento : ''}<br>
-            ${dados.bairro || '—'} | ${dados.cidadeEntrega || '—'} - ${dados.ufEntrega || '—'} | CEP: ${dados.cep || '—'}</span>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2"><span class="label">Urgência</span><span class="value" style="color:${urgColor};font-weight:bold">${urgText}</span></td>
-        </tr>
-      </table>
+  <div class="divider"></div>
+
+  <!-- CLIENTE -->
+  <div class="section-title">Dados do Cliente</div>
+  <div class="client-grid mb">
+    <div class="client-row">
+      <div class="client-label">Razão Social</div>
+      <div class="client-value">${dados.razaoSocial || '—'}</div>
+    </div>
+    <div class="client-row">
+      <div class="client-label">CNPJ</div>
+      <div class="client-value">${dados.cnpj || '—'}</div>
+    </div>
+    <div class="client-row">
+      <div class="client-label">Responsável</div>
+      <div class="client-value">${dados.responsavel || '—'}</div>
+    </div>
+    <div class="client-row">
+      <div class="client-label">Cidade / Estado</div>
+      <div class="client-value">${dados.cidade || '—'} — ${dados.estado || '—'}</div>
+    </div>
+    <div class="client-row">
+      <div class="client-label">Telefone</div>
+      <div class="client-value">${dados.telefone || '—'}</div>
+    </div>
+    <div class="client-row">
+      <div class="client-label">E-mail</div>
+      <div class="client-value">${dados.email || '—'}</div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-title">Resumo do Pedido</div>
-    <table class="table-produtos">
+  <!-- ENTREGA -->
+  <div class="section-title">Endereço de Entrega</div>
+  <div class="address-box mb">
+    ${dados.logradouro || '—'}, ${dados.numero || 'S/N'}${dados.complemento ? ' · '+dados.complemento : ''} · ${dados.bairro || '—'}<br/>
+    ${dados.cidade || '—'} — ${dados.estado || '—'} · CEP: ${dados.cep || '—'}
+  </div>
+
+  <!-- PRODUTOS -->
+  <div class="section-title">Dispositivos Solicitados</div>
+  <div class="table-wrap mb">
+    <table>
       <thead>
         <tr>
-          <th style="width:50%">Produto / Versão</th>
-          <th style="width:20%;text-align:center">V. Unit.</th>
-          <th style="width:10%;text-align:center">Qtd.</th>
-          <th style="width:20%;text-align:right">Total</th>
+          <th>Modelo / Dispositivo</th>
+          <th style="text-align:center">Versão</th>
+          <th style="text-align:right">Qtd.</th>
         </tr>
       </thead>
       <tbody>
         ${produtosHtml}
-        <tr class="total-row">
-          <td colspan="3" style="text-transform:uppercase;font-size:11px;letter-spacing:1px">Valor Total do Pedido (${dados.totalQtd || '0'} un.)</td>
-          <td style="text-align:right">R$ ${dados.totalValor || '0,00'}</td>
+        <tr class="total-section">
+          <td colspan="2">Total de Dispositivos</td>
+          <td style="text-align:right">${dados.totalQtd || '0'}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="section" style="margin-top:30px">
-    <div class="section-title">Condições Comerciais</div>
-    <div class="box">
-      <table class="grid">
-        <tr>
-          <td style="width:33%"><span class="label">Pagamento</span><span class="value">${dados.pagamento || '—'}</span></td>
-          <td style="width:33%"><span class="label">Validade</span><span class="value">${dados.validade || '—'}</span></td>
-          <td style="width:33%"><span class="label">Vendedor</span><span class="value">${dados.vendedor || '—'}</span></td>
-        </tr>
-      </table>
-    </div>
-  </div>
-
+  <!-- OBSERVACOES -->
   ${dados.observacoes ? `
-  <div class="section" style="margin-top:20px">
-    <div class="section-title">Observações</div>
-    <div style="font-size:12px;color:#444;line-height:1.5">${dados.observacoes}</div>
+  <div class="notes-box">
+    <div class="notes-label">Observações</div>
+    <div class="notes-text">${dados.observacoes}</div>
   </div>
   ` : ''}
 
-  <table class="signature-block">
-    <tr>
-      <td><div class="sign-line">Assinatura do Cliente</div></td>
-      <td><div class="sign-line">Aprovação / Portal Master</div></td>
-    </tr>
-  </table>
-
-  <div class="footer">
-    PORTAL MASTER — DOCUMENTO AUTOGERADO PELO SISTEMA — VALIDAÇÃO ELETRÔNICA
+  <!-- ALERT -->
+  <div class="alert">
+    <span class="alert-icon">⚠</span>
+    <span><strong>Atenção:</strong> Este pedido foi validado com a equipe técnica quanto ao modelo correto do dispositivo antes do envio.</span>
   </div>
 
+  <!-- ASSINATURAS -->
+  <div class="signatures">
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <div class="sig-label">Assinatura / Responsável Master</div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-line"></div>
+      <div class="sig-label">Aprovação Equipe Técnica</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Portal Master &nbsp;·&nbsp; Documento autogerado pelo sistema &nbsp;·&nbsp; Validação Eletrônica
+  </div>
+</div>
 </body>
 </html>
   `;
@@ -285,5 +430,5 @@ function gerarEsalvarPDF_V2(protocolo, dados, produtosHtml, agora) {
   blob.setName(protocolo + '.pdf');
   
   var arquivo = DriveApp.getFolderById(PASTA_DRIVE_ID).createFile(blob);
-  return arquivo.getUrl();
+  return arquivo; // Agora retorna o objeto File do Drive
 }

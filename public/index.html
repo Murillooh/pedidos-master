@@ -446,11 +446,11 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPiUb7gRLaE5CF
 
 // ── PRODUTOS CONFIG ──
 const MODELOS = [
-  {nome:'N4 — Rastreador',versoes:['Padrão','Pro','Lite'],preco:350,peso:0.15},
-  {nome:'AllBlock Full',versoes:['v1','v2','v3'],preco:420,peso:0.20},
-  {nome:'AllBlock Eletrônico',versoes:['Standard','Plus'],preco:390,peso:0.18},
-  {nome:'Rastreador Compacto',versoes:['C1','C2'],preco:280,peso:0.10},
-  {nome:'Bloqueador Master',versoes:['BM Pro','BM Lite'],preco:510,peso:0.25},
+  {nome:'N4 — Rastreador',versoes:['Padrão','Pro','Lite'],peso:0.15},
+  {nome:'AllBlock Full',versoes:['v1','v2','v3'],peso:0.20},
+  {nome:'AllBlock Eletrônico',versoes:['Standard','Plus'],peso:0.18},
+  {nome:'Rastreador Compacto',versoes:['C1','C2'],peso:0.10},
+  {nome:'Bloqueador Master',versoes:['BM Pro','BM Lite'],peso:0.25},
 ];
 
 let passoAtual = 1;
@@ -690,9 +690,7 @@ function coletarDados(){
       produtos.push({
         modelo:m.nome,
         versao:document.getElementById(id+'-versao')?.value||'',
-        qtd:qtd,
-        precoUnit:m.preco,
-        total:m.preco*qtd
+        qtd:qtd
       });
     }
   });
