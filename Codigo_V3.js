@@ -407,14 +407,10 @@ tbody td:last-child{text-align:right;font-weight:600}
   </div>
 
   <!-- ASSINATURAS -->
-  <div class="signatures">
+  <div class="signatures" style="grid-template-columns: 1fr; max-width: 350px; margin: 0 auto 44px;">
     <div class="sig-block">
       <div class="sig-line"></div>
       <div class="sig-label">Assinatura / Responsável Master</div>
-    </div>
-    <div class="sig-block">
-      <div class="sig-line"></div>
-      <div class="sig-label">Aprovação Equipe Técnica</div>
     </div>
   </div>
 

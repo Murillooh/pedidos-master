@@ -430,14 +430,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
 
 
-    <div class="section-title">Aprovação</div>
-    <div class="card">
-      <div class="field">
-        <label>E-mail do Aprovador (Equipe Técnica)</label>
-        <input type="email" id="emailAprovador" placeholder="tecnico@munago.com.br"/>
-      </div>
-    </div>
-
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="irPasso(2)">← Voltar</button>
       <button class="btn btn-primary" onclick="irPasso(4)">Próximo →</button>
@@ -721,7 +713,7 @@ function coletarDados(){
     urgencia:v('urgencia'),
     validade: '',
     vendedor: '',
-    emailAprovador:v('emailAprovador'),observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
+    emailAprovador: '',observacoes:v('observacoes'),pedidoRef:v('pedidoRef'),
     produtos:produtos,
     totalQtd:document.getElementById('total-qtd').textContent,
     totalValor: '',
