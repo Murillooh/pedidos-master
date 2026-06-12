@@ -1,4 +1,5 @@
 var PASTA_DRIVE_ID = '1saQazfevhpRNebPnfNZbCXT_JK5SN1US'; 
+var EMAIL_ADICIONAL = 'paulo.mungo@cooperloc.com.br'; // E-mail adicional que também receberá os pedidos e acesso ao Drive
 
 // =====================================================================
 // FUNÇÃO PARA AUTORIZAR O GOOGLE A ENVIAR E-MAILS (EXECUTE-A UMA VEZ!)
@@ -143,6 +144,15 @@ function processarPedidoV2(d) {
   // GERAR PDF COM O TEMPLATE NOVO (agora retorna o arquivo em si)
   var arquivoPDF = gerarEsalvarPDF_V4(protocolo, d, produtosHtml, agora);
   
+  // Compartilhar arquivo no Drive com o e-mail adicional se configurado
+  if (EMAIL_ADICIONAL && EMAIL_ADICIONAL !== 'seu-email-adicional@exemplo.com' && EMAIL_ADICIONAL.indexOf('@') !== -1) {
+    try {
+      arquivoPDF.addEditor(EMAIL_ADICIONAL); // Concede permissão de edição/visualização no Drive
+    } catch(err) {
+      console.log("Erro ao compartilhar arquivo no Drive com " + EMAIL_ADICIONAL + ": " + err.toString());
+    }
+  }
+  
   // =========================================================
   // ENVIAR E-MAILS WITH THE PDF ATTACHED
   // =========================================================
@@ -167,15 +177,20 @@ function processarPedidoV2(d) {
       });
     }
     
-    // 2. Enviando para o Administrador (Você)
+    // 2. Enviando para o Administrador (Você) e E-mail Adicional (se configurado)
     var assuntoAdmin = "NOVO PEDIDO: " + protocolo + " - " + (d.razaoSocial || 'Cliente Novo');
     var corpoAdmin = "<h2>Novo Pedido Recebido pelo Portal!</h2>" +
                      "<p>O cliente <strong>" + (d.razaoSocial || 'Não informado') + "</strong> gerou um novo pedido através do formulário.</p>" +
                      "<p>O documento em PDF contendo todos os detalhes está em anexo a este e-mail.</p>" +
                      "<br/><p>Para ver na planilha, acesse seu Google Sheets.</p>";
                      
+    var destinatariosAdmin = adminEmail;
+    if (EMAIL_ADICIONAL && EMAIL_ADICIONAL !== 'seu-email-adicional@exemplo.com' && EMAIL_ADICIONAL.indexOf('@') !== -1) {
+      destinatariosAdmin += "," + EMAIL_ADICIONAL;
+    }
+    
     MailApp.sendEmail({
-      to: adminEmail,
+      to: destinatariosAdmin,
       subject: assuntoAdmin,
       htmlBody: corpoAdmin,
       attachments: [arquivoPDF.getBlob()]
