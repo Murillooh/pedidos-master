@@ -96,13 +96,12 @@ function processarPedidoV2(d) {
       
       produtosHtml += "<tr>";
       produtosHtml += "<td>" + p.modelo + "</td>";
-      produtosHtml += "<td style='text-align:center'>" + (p.versao ? p.versao : "—") + "</td>";
       produtosHtml += "<td style='text-align:right'>" + p.qtd + "</td>";
       produtosHtml += "</tr>";
     });
     produtosStr = produtosStr.replace(/ \| $/, "");
   } else {
-    produtosHtml = "<tr><td colspan='3' style='text-align:center'>Nenhum dispositivo adicionado.</td></tr>";
+    produtosHtml = "<tr><td colspan='2' style='text-align:center'>Nenhum dispositivo adicionado.</td></tr>";
   }
 
   // GRAVAR NA PLANILHA
@@ -287,7 +286,6 @@ thead th{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:upper
 thead th:last-child{text-align:right}
 tbody tr{border-bottom:1px solid var(--border)}
 tbody td{padding:8px 12px;font-size:12.5px;color:var(--text)}
-tbody td:nth-child(2){text-align:center;color:var(--muted2);font-size:11px}
 tbody td:last-child{text-align:right;font-weight:600}
 .total-section{background:var(--s3)!important;border-top:1px solid var(--gold-dim)!important}
 .total-section td{padding:10px!important}
@@ -393,14 +391,13 @@ tbody td:last-child{text-align:right;font-weight:600}
       <thead>
         <tr>
           <th>Modelo / Dispositivo</th>
-          <th style="text-align:center">Versão</th>
           <th style="text-align:right">Qtd.</th>
         </tr>
       </thead>
       <tbody>
         \${produtosHtml}
         <tr class="total-section">
-          <td colspan="2">Total de Dispositivos</td>
+          <td colspan="1">Total de Dispositivos</td>
           <td style="text-align:right">\${dados.totalQtd || '0'}</td>
         </tr>
       </tbody>

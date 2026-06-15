@@ -114,7 +114,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
 /* ── PRODUTOS TABLE ── */
 .produtos-header{
-  display:grid;grid-template-columns:2.5fr 1.5fr 1fr 40px;
+  display:grid;grid-template-columns:4fr 1fr 40px;
   gap:0;border:1px solid var(--border);border-bottom:none;
 }
 .produtos-header div{
@@ -125,7 +125,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .produtos-header div:last-child{border-right:none}
 
 .produto-row{
-  display:grid;grid-template-columns:2.5fr 1.5fr 1fr 40px;
+  display:grid;grid-template-columns:4fr 1fr 40px;
   gap:0;border:1px solid var(--border);border-bottom:none;
 }
 .produto-row:last-of-type{border-bottom:1px solid var(--border)}
@@ -234,8 +234,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   
   .pag-options { grid-template-columns: 1fr 1fr; }
   
-  .produtos-header { grid-template-columns: 1.5fr 1fr 0.8fr 30px; }
-  .produto-row { grid-template-columns: 1.5fr 1fr 0.8fr 30px; }
+  .produtos-header { grid-template-columns: 2.5fr 0.8fr 30px; }
+  .produto-row { grid-template-columns: 2.5fr 0.8fr 30px; }
   .produtos-header div, .produto-row select, .produto-row input { padding: 10px 8px; font-size: 11px; }
   .produto-row select { background-position: right 4px center; padding-right: 18px; }
 }
@@ -399,7 +399,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 
     <div class="produtos-header">
       <div>Modelo / Dispositivo</div>
-      <div>Versão / Config.</div>
       <div>Qtd.</div>
       <div></div>
     </div>
@@ -547,26 +546,15 @@ function adicionarProduto(){
   div.className='produto-row';
   div.id=id;
   div.innerHTML=`
-    <select onchange="atualizarVersoes('${id}',this.value);calcularTotais()">
+    <select onchange="calcularTotais()">
       <option value="">Selecione o modelo</option>
       ${MODELOS.map((m,i)=>`<option value="${i}">${m.nome}</option>`).join('')}
     </select>
-    <select id="${id}-versao"><option value="">—</option></select>
     <input type="number" id="${id}-qtd" value="1" min="1" max="9999" oninput="calcularTotais()"/>
     <div class="row-remove" onclick="removerProduto('${id}')">×</div>
   `;
   document.getElementById('produtos-body').appendChild(div);
   calcularTotais();
-}
-
-function atualizarVersoes(id,idx){
-  const sel=document.getElementById(id+'-versao');
-  sel.innerHTML='<option value="">Padrão</option>';
-  if(idx==='') return;
-  MODELOS[idx].versoes.forEach(v=>{
-    const opt=document.createElement('option');
-    opt.value=v;opt.textContent=v;sel.appendChild(opt);
-  });
 }
 
 function removerProduto(id){
@@ -606,11 +594,10 @@ function gerarResumo(){
     const sel=row.querySelector('select');
     const idx=sel?.value;
     const qtd=parseInt(document.getElementById(id+'-qtd')?.value)||0;
-    const versao=document.getElementById(id+'-versao')?.value||'';
     if(idx!==''&&MODELOS[idx]&&qtd>0){
       const m=MODELOS[idx];
       produtosHtml+=`<div class="totais-row">
-        <span class="totais-label">${m.nome}${versao?' · '+versao:''}</span>
+        <span class="totais-label">${m.nome}</span>
         <span class="totais-val">${qtd} un.</span>
       </div>`;
     }
@@ -697,7 +684,7 @@ function coletarDados(){
       const m=MODELOS[idx];
       produtos.push({
         modelo:m.nome,
-        versao:document.getElementById(id+'-versao')?.value||'',
+        versao:'',
         qtd:qtd
       });
     }
