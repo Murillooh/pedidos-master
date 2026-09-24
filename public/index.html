@@ -736,6 +736,53 @@
         -webkit-text-fill-color: var(--text) !important;
         transition: background-color 5000s ease-in-out 0s;
     }
+    /* ── PRELOADER ── */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #preloader.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--s3);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    .preloader-text {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
   </style>
   <script> // 🔴 MODO DE MANUTENÇÃO
     // Mude de 'false' para 'true' quando quiser bloquear o acesso ao formulário
@@ -746,9 +793,24 @@
       }
     });
   </script>
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+          preloader.classList.add('hide');
+          setTimeout(() => preloader.remove(), 500);
+        }
+      }, 3500);
+    });
+  </script>
 </head>
 
 <body>
+  <div id="preloader">
+    <div class="spinner"></div>
+    <div class="preloader-text">Carregando sistema...</div>
+  </div>
   <div class="topbar">
     <div class="topbar-brand">
       <div class="topbar-dot"></div>
