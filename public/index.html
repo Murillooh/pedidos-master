@@ -786,7 +786,7 @@
   </style>
   <script> // 🔴 MODO DE MANUTENÇÃO
     // Mude de 'false' para 'true' quando quiser bloquear o acesso ao formulário
-    const EM_MANUTENCAO = false;
+    const EM_MANUTENCAO = true;
     document.addEventListener("DOMContentLoaded", () => {
       if (EM_MANUTENCAO) {
         document.body.innerHTML = ` <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);color:var(--text);font-family:'DM Sans', sans-serif;text-align:center;padding:20px;" > <div style="width:16px;height:16px;background:var(--gold);border-radius:50%;box-shadow:0 0 15px var(--gold);margin-bottom:24px;" ></div> <h1 style="font-family:'Playfair Display', serif; margin:0;font-size:28px;color:var(--gold-light);" >Sistema em Manutenção</h1> <p style="color:var(--muted);margin-top:12px;max-width:400px;line-height:1.5;" >Estamos aplicando melhorias e atualizando nosso formulário de pedidos. Por favor, retorne em breve !</p> </div> `;
